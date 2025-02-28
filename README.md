@@ -1,4 +1,4 @@
-Microservice project:
+Microservice project (master branch):
 
 Four separated projects, each representing microservice:
 
