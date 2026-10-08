@@ -1,0 +1,22 @@
+$kind: collection
+name: Microservices API
+auth:
+  - id: 4917ab47-1e67-45c1-a6f9-9d81d489f731
+    type: noauth
+    name: No Auth
+variables:
+  - key: baseUrl
+    value: http://localhost:8080
+    disabled: false
+  - key: token
+    value: ""
+    disabled: true
+  - key: userId
+    value: "1"
+    disabled: false
+  - key: username
+    value: johndoe
+    disabled: false
+  - key: productId
+    value: "1"
+    disabled: false

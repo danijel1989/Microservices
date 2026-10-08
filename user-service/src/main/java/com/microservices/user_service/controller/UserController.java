@@ -29,6 +29,11 @@ public class UserController {
 		return "Hello from USER service test method";
 	}
 	
+	@RequestMapping(value = "/test_admin")
+	public String testAdminMethod() {
+		return "Hello ADMIN";
+	}
+	
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public List<User> getAllUsers() {
 		return userService.getAllUsers();
@@ -63,12 +68,5 @@ public class UserController {
 	public void assignProductToUser(@PathVariable int userId, @RequestBody ProductDto productDto) {
 		userService.assignProductToUser(userId, productDto);
 	}
-	
-	
-	
-//	@RequestMapping(value = "/products")
-//	public List<ProductDto> getAllProducts() {
-//		return userService.getAllProducts();
-//	}
 
 }

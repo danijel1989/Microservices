@@ -8,20 +8,18 @@ spring:
     gateway:
       routes:
         - id: user-service
-          uri: http://localhost:8081
+          uri: lb://USER-SERVICE
           predicates:
             - Path=/user-service/**, /auth/**
 
         - id: product-service
-          uri: http://localhost:8082
+          uri: lb://PRODUCT-SERVICE
           predicates:
             - Path=/product-service/**
-          filters:
-            - AuthenticationFilter
-    eureka:
-      client:
-        serviceUrl:
-          defaultZone: http://localhost:8761/eureka/
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
 
 logging:
   level:

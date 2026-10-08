@@ -1,47 +1,40 @@
 package com.microservices.user_service.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.microservices.user_service.dto.AuthRequest;
-import com.microservices.user_service.entity.User;
-import com.microservices.user_service.service.AuthService;
+import com.microservices.user_service.dto.LoginRequest;
+import com.microservices.user_service.dto.UserDto;
+import com.microservices.user_service.security.JwtUtil;
+import com.microservices.user_service.service.UserService;
+
 
 @RestController
 @RequestMapping(value = "/auth")
 public class AuthController {
 	
-    @Autowired
-    private AuthService service;
-    @Autowired
-    private AuthenticationManager authenticationManager;
+	@Autowired
+	private JwtUtil jwtUtil;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	public String login(@RequestBody LoginRequest loginRequest) {
+		
+		UserDto userDto = userService.getUserByUsername(loginRequest.getUsername());
+		
+		boolean passwordMatch = passwordEncoder.matches(loginRequest.getPassword(), userDto.getPassword());
+		
+		if(passwordMatch) {
+			return jwtUtil.generateToken(userDto.getUsername(), userDto.getRoles());
+		}
+		return "Invalid username or password";
+	}
 
-    @PostMapping(value = "/register")
-    public String addNewUser(@RequestBody User user) {
-        return service.saveNewUser(user);
-    }
-
-    @PostMapping(value = "/token")
-    public String getToken(@RequestBody AuthRequest authRequest) {
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-        if (authenticate.isAuthenticated()) {
-            return service.generateToken(authRequest.getUsername());
-        } else {
-            throw new RuntimeException("invalid access");
-        }
-    }
-
-    @GetMapping(value = "/validate")
-    public String validateToken(@RequestParam("token") String token) {
-        service.validateToken(token);
-        return "Token is valid";
-    }
 }

@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{baseUrl}}/user-service/1"
+method: GET
+order: 3787743351716679
