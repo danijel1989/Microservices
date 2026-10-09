@@ -1,0 +1,40 @@
+services:
+  eureka-server:
+    image: eureka-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-network
+
+  user-service:
+    image: user-service
+    container_name: user-service
+    networks:
+      - microservices-network
+    depends_on:
+      - eureka-server
+
+  product-service:
+    image: product-service
+    container_name: product-service
+    networks:
+      - microservices-network
+    depends_on:
+      - eureka-server
+
+  api-gateway:
+    image: api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    networks:
+      - microservices-network
+    depends_on:
+      - eureka-server
+      - user-service
+      - product-service
+
+networks:
+  microservices-network:
+    external: true
