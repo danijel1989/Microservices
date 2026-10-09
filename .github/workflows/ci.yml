@@ -46,3 +46,19 @@ jobs:
       - name: Build Docker image
         run: docker build -t ${{matrix.image }} .
         working-directory: ${{matrix.service }}
+
+      - name: Log in to Github Container Registry
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tag Docker image for GHCR
+        if: github.event_name == 'push'
+        run: docker tag ${{ matrix.image }} ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}:latest
+
+      - name: Push DOcker image to GHCR
+        if: github.event_name = 'push'
+        run: docker push ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}:latest
