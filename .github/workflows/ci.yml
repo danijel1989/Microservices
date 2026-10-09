@@ -14,14 +14,14 @@ jobs:
 
     strategy:
       matrix:
-        service:
-          - eureka
+        include:
+          - service: eureka
             image: eureka-server
-          - api-gateway
+          - service: api-gateway
             image: api-gateway
-          - user-service
+          - service: user-service
             image: user-service
-          - product-service
+          - service: product-service
             image: product-service
 
     steps:
