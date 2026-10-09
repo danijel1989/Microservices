@@ -10,6 +10,8 @@ services:
   user-service:
     image: ghcr.io/danijel1989/user-service:latest
     container_name: user-service
+    environment:
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
     networks:
       - microservices-network
     depends_on:
@@ -26,6 +28,8 @@ services:
   api-gateway:
     image: ghcr.io/danijel1989/api-gateway:latest
     container_name: api-gateway
+    environment:
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
     ports:
       - "8080:8080"
     networks:

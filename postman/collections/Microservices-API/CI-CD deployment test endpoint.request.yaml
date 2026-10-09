@@ -1,0 +1,5 @@
+$kind: http-request
+name: CI/CD deployment test endpoint
+url: ""
+method: GET
+order: 187871943197671
