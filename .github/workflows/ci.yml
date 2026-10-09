@@ -16,9 +16,13 @@ jobs:
       matrix:
         service:
           - eureka
+            image: eureka-server
           - api-gateway
+            image: api-gateway
           - user-service
+            image: user-service
           - product-service
+            image: product-service
 
     steps:
       - name: Checkout repository
@@ -34,3 +38,7 @@ jobs:
       - name: Build service without testing
         run: mvn clean package -DskipTests
         working-directory: ${{matrix.service}}
+
+      - name: Build Docker image
+        run: docker run -t ${{matrix.image }} .
+        working-directory: ${{matrix.service }}
