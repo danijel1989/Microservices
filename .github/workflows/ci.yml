@@ -40,5 +40,5 @@ jobs:
         working-directory: ${{matrix.service}}
 
       - name: Build Docker image
-        run: docker run -t ${{matrix.image }} .
+        run: docker build -t ${{matrix.image }} .
         working-directory: ${{matrix.service }}
