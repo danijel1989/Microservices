@@ -29,6 +29,12 @@ public class UserController {
 		return "Hello from USER service test method";
 	}
 	
+	@RequestMapping(value = "/test-cicd")
+	public String testCiCdMethod() {
+		return "New endpoint deployed successfully!!!";
+	}
+	
+	
 	@RequestMapping(value = "/test_admin")
 	public String testAdminMethod() {
 		return "Hello ADMIN";

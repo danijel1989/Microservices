@@ -1,6 +1,6 @@
 services:
   eureka-server:
-    image: eureka-server
+    image: ghcr.io/danijel1989/eureka-server:latest
     container_name: eureka-server
     ports:
       - "8761:8761"
@@ -8,7 +8,7 @@ services:
       - microservices-network
 
   user-service:
-    image: user-service
+    image: ghcr.io/danijel1989/user-service:latest
     container_name: user-service
     networks:
       - microservices-network
@@ -16,7 +16,7 @@ services:
       - eureka-server
 
   product-service:
-    image: product-service
+    image: ghcr.io/danijel1989/product-service:latest
     container_name: product-service
     networks:
       - microservices-network
@@ -24,7 +24,7 @@ services:
       - eureka-server
 
   api-gateway:
-    image: api-gateway
+    image: ghcr.io/danijel1989/api-gateway:latest
     container_name: api-gateway
     ports:
       - "8080:8080"
