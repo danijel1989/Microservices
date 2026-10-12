@@ -6,24 +6,62 @@ services:
       - "8761:8761"
     networks:
       - microservices-network
+  
+  postgres-db:
+    image: postgres:17
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: microservices
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5433:5432"
+    networks:
+      - microservices-network
+
+  mysql-db:
+    image: mysql:8.4
+    container_name: mysql-db
+    environment:
+      MYSQL_DATABASE: microservices
+      MYSQL_USER: microservices-root
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD must be set}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD must be set}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "127.0.0.1:3307:3306"
+    networks:
+      - microservices-network
 
   user-service:
     image: ghcr.io/danijel1989/user-service:latest
     container_name: user-service
     environment:
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/microservices
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
     networks:
       - microservices-network
     depends_on:
       - eureka-server
+      - postgres-db
 
   product-service:
     image: ghcr.io/danijel1989/product-service:latest
     container_name: product-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/microservices
+      SPRING_DATASOURCE_USERNAME: microservices-root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD must be set}
     networks:
       - microservices-network
     depends_on:
       - eureka-server
+      - mysql-db
 
   api-gateway:
     image: ghcr.io/danijel1989/api-gateway:latest
@@ -38,6 +76,10 @@ services:
       - eureka-server
       - user-service
       - product-service
+
+volumes:
+  postgres-data:
+  mysql-data:
 
 networks:
   microservices-network:
