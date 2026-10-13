@@ -86,5 +86,16 @@ public class UserDao {
 		
 		return userDto;
 	}
+	
+	public boolean checkIfUsernameExist(String username) {
+		
+		String hql = "from User u where u.username = :username";
+		
+		User user = sessionFactory.getCurrentSession().createQuery(hql, User.class)
+				     .setParameter("username", username)
+				     .uniqueResult();
+		
+		return user != null ? true : false;
+	}
 
 }

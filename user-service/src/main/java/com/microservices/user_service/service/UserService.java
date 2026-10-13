@@ -2,17 +2,15 @@ package com.microservices.user_service.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
 import com.microservices.user_service.client.ProductServiceClient;
+import com.microservices.user_service.dao.RoleDao;
 import com.microservices.user_service.dao.UserDao;
 import com.microservices.user_service.dto.ProductDto;
+import com.microservices.user_service.dto.RegisterRequest;
+import com.microservices.user_service.dto.RegisterResponse;
 import com.microservices.user_service.dto.UserDto;
-//import com.microservices.user_service.dto.ProductDto;
 import com.microservices.user_service.entity.User;
 
 import jakarta.transaction.Transactional;
@@ -20,17 +18,19 @@ import jakarta.transaction.Transactional;
 @Service
 public class UserService {
 	
-//	REST TEMPLATE
-//	@Autowired
-//	private RestTemplate restTemplate;
-//	@Value("${product-service.name}")
-//	private String productServiceName;
-//	@Value("${product-service.path}")
-//	private String productServicePath;
-	@Autowired
-	private ProductServiceClient productServiceClient;
-	@Autowired
-	private UserDao userDao;
+	private final PasswordEncoder passwordEncoder;
+	private final ProductServiceClient productServiceClient;
+	private final UserDao userDao;
+	private final RoleDao roleDao;
+
+
+	UserService(PasswordEncoder passwordEncoder, ProductServiceClient productServiceClient,
+			    UserDao userDao, RoleDao roleDao) {
+		this.passwordEncoder = passwordEncoder;
+		this.productServiceClient = productServiceClient;
+		this.userDao = userDao;
+		this.roleDao = roleDao;
+	}
 	
 
 	@Transactional
@@ -65,39 +65,33 @@ public class UserService {
 	
 	@Transactional
 	public void assignProductToUser(int userId, ProductDto productDto) {
+		
 		User user = this.getUserById(userId);
-//		String productUrl = "http://"+productServiceName+productServicePath+productDto.getId();
-//		ResponseEntity<ProductDto> product = restTemplate.getForEntity(productUrl, ProductDto.class);
-		
 		ProductDto product = productServiceClient.getProductById(productDto.getId());
-		
 		user.setProductId(product.getId());
 		userDao.updateUser(user, userId);
 	}
+
+	@Transactional
+	public RegisterResponse registerNewUser(RegisterRequest registerRequest) {
+		
+		User newUser = new User();
+		newUser.setFirstName(registerRequest.getFirstName());
+		newUser.setLastName(registerRequest.getLastName());
+		newUser.setUsername(registerRequest.getUsername());
+		newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+		newUser.setAge(registerRequest.getAge());
+		newUser.getRoles().add(roleDao.findByName("USER"));
+		userDao.createUser(newUser);
+		
+		return RegisterResponse.builder().firstName(registerRequest.getFirstName())
+				 .lastName(registerRequest.getLastName())
+				 .username(registerRequest.getUsername())
+				 .message("Welcome " + registerRequest.getFirstName() + "! Your username is " + registerRequest.getUsername())
+				 .build();
+		
+	}
 	
-	
-	
-//	public List<User> getUsers() {
-//		
-//		List<User> list = new ArrayList<User>();
-////		list.add(new User("Danijel", "Mihailovic", 35));
-////		list.add(new User("Mina", "Nikolic", 31));
-////		list.add(new User("Marko", "Marinkovic", 32));
-//		
-//		return list;
-//		
-//	}
-	
-//	public List<ProductDto> getAllProducts() {
-//		String url = "http://PRODUCT-SERVICE/product-service/products";
-//		ResponseEntity<List<ProductDto>> response =  restTemplate.exchange(
-//				url, 
-//				HttpMethod.GET, 
-//				null, 
-//				new ParameterizedTypeReference<List<ProductDto>>() {}
-//				);
-//		
-//		return response.getBody();
-//	}
+
 
 }
