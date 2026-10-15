@@ -6,12 +6,12 @@ import java.util.stream.Collectors;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.microservices.user_service.dto.UserDto;
 import com.microservices.user_service.entity.Role;
 import com.microservices.user_service.entity.User;
 
-import jakarta.transaction.Transactional;
 
 @Repository
 public class UserDao {
@@ -87,6 +87,7 @@ public class UserDao {
 		return userDto;
 	}
 	
+	@Transactional(readOnly = true)
 	public boolean checkIfUsernameExist(String username) {
 		
 		String hql = "from User u where u.username = :username";
