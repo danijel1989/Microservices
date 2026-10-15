@@ -16,7 +16,7 @@ public class RoleDao {
 	
 	public Role findByName(String roleName) {
 		
-		String hql = "from Role r where r.name = :roleName";
+		String hql = "from Role r where r.roleName = :roleName";
 		
 		return sessionFactory.getCurrentSession().createQuery(hql, Role.class)
 				.setParameter("roleName", roleName)
