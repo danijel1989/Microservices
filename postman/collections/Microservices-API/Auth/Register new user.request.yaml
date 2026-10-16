@@ -1,0 +1,19 @@
+$kind: http-request
+url: "{{baseUrl}}/auth/register"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"firstName\": \"Nenad\",\r
+
+    \    \"lastName\":\"Nenadovic\",\r
+
+    \    \"username\":\"nesa\",\r
+
+    \    \"password\": \"password123\",\r
+
+    \    \"age\": 41\r
+
+    }"
+order: 3071779398485921
